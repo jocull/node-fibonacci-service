@@ -24,9 +24,15 @@ router.get('/fib/:fib', function(req, res) {
                 }
             });
         }).then(function(result) {
-            res.send(200, result);
+            res.status(200)
+               .send({
+                   result
+                });
         }).catch(function(err) {
-            res.send(500, err);
+            res.status(500).send({
+                message: err.message,
+                stack: err.stack
+            });
         });
     }
 });
