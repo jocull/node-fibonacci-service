@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 
 router.get('/fib/:fib', function(req, res) {
     var fibN = parseInt(req.params.fib);
-    if (fibN == NaN) {
+    if (fibN == NaN || fibN < 0) {
         res.send(400, "Bad fib value! " + fibN);
     } else {
         new Promise(function (resolve, reject) {
