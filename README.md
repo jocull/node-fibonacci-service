@@ -10,7 +10,7 @@ Why do math when you can make HTTP requests?
 
 ## Implementation details
 
-Calculation results are cached on the server for speed and results can be are arbitrarily large, at least until you run out of server memory or hit the hard limit. Work is offloaded to a child process, but it ends up blocking the main thread anyways because it's waiting on the cache to respond. That was dumb. I might fix it, but I probably won't fix it.
+Calculation results are cached on the server for speed and results are arbitrarily large, at least until you run out of server memory or hit the hard limit. Work is offloaded to a child process, but it ends up blocking the main thread anyways because it's waiting on the cache to respond. That was dumb. I might fix it, but I probably won't fix it.
 
 - See `const LIMIT` under `routes/index.js`) for the hard limit.
 - See `package.json` and alter `--max_old_space_size=[____MB]` to raise (or lower) the memory limit for Node to fit your server.
