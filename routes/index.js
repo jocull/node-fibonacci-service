@@ -13,14 +13,14 @@ const workers = Promise.promisify(workerFarm({
                   },
                   require.resolve('../workers/fib')));
 
+const LIMIT = bigInt('200000');
+
 router.get('/', function (req, res) {
   res.status(200)
     .send({
       status: 'ok!',
     });
 });
-
-const LIMIT = bigInt('200000');
 
 router.get('/fib/:fib', function (req, res, next) {
   return Promise.resolve()
