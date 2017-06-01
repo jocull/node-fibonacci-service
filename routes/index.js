@@ -20,6 +20,8 @@ router.get('/', function (req, res) {
     });
 });
 
+const LIMIT = bigInt('200000');
+
 router.get('/fib/:fib', function (req, res, next) {
   return Promise.resolve()
     .then(() => {
@@ -28,6 +30,8 @@ router.get('/fib/:fib', function (req, res, next) {
           let nBigInt = bigInt(req.params.fib);
           if (nBigInt.lt(bigInt.zero)) {
             throw 'Input must be >= 0';
+          } else if (nBigInt.gt(LIMIT)) {
+            throw `Sorry! Can't generate higher than ${LIMIT.toString()} unless you raise the limit (see code)`;
           }
           return nBigInt.toString();
         })

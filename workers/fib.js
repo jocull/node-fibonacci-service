@@ -5,7 +5,6 @@ const fibCache = new Map();
 
 module.exports = function (inputNumStr, callback) {
   let inputBigInt = bigInt(inputNumStr.toString());
-  // let resultBigInt = fibonacciRecursive(inputBigInt);
   let resultBigInt = fibonacciGetFromGenerator(inputBigInt);
   let resultStr = resultBigInt.toString();
   callback(null, resultStr);
@@ -13,8 +12,10 @@ module.exports = function (inputNumStr, callback) {
 
 // Example (in Python):
 // https://stackoverflow.com/a/22111492/97964
+// 
 // Beware Python operation evaluation ordering:
 // https://stackoverflow.com/questions/8725673/multiple-assignment-and-evaluation-order-in-python
+// 
 // def fib(n):
 //   a, b = 0, 1
 //   while n > 0:
