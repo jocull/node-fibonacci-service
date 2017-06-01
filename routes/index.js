@@ -1,40 +1,65 @@
-var express = require('express');
-var router = express.Router();
+'use strict'
 
-var workerFarm = require('worker-farm');
-var workers = workerFarm({ maxConcurrentWorkers: 1, autoStart: true }, require.resolve('../fib'));
+const express = require('express');
+const router = express.Router();
 
-/* GET home page. */
+const Promise = require('bluebird');
+const bigInt = require('big-integer');
+const workerFarm = require('worker-farm');
+const workers = Promise.promisify(workerFarm({
+                    autoStart: true,
+                    maxConcurrentWorkers: 1,
+                    maxRetries: 1,
+                  },
+                  require.resolve('../fib')));
+
+class ValidationError extends Error {}
 
 router.get('/', function (req, res) {
-    res.render('index', { title: 'Express' });
+  res.status(200)
+    .send({
+      status: 'ok!',
+    });
 });
 
 router.get('/fib/:fib', function (req, res) {
-    var fibN = parseInt(req.params.fib);
-    if (fibN == NaN || fibN < 0) {
-        res.send(400, "Bad fib value! " + fibN);
-    } else {
-        new Promise(function (resolve, reject) {
-            workers(fibN, function (err, result) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        }).then(function (result) {
-            res.status(200)
-                .send({
-                    result
-                });
-        }).catch(function (err) {
-            res.status(500).send({
-                message: err.message,
-                stack: err.stack
-            });
+  return Promise.resolve()
+    .then(() => {
+      return Promise.try(() => {
+          // bigInt throws strings on parsing failure
+          let nBigInt = bigInt(req.params.fib);
+          if (nBigInt.lt(bigInt.zero)) {
+            throw 'Input must be >= 0';
+          }
+          return nBigInt.toString();
+        })
+        .catch(errString => {
+          // Rethrow for higher handler
+          throw new ValidationError(errString);
         });
-    }
+    })
+    .then(nStr => workers(nStr))
+    .then(result => {
+      res.status(200)
+        .send({
+          result,
+        });
+    })
+    .catch(err => {
+      console.error('err2', err, typeof err);
+      if (err instanceof ValidationError) {
+        res.status(400)
+          .send({
+            error: err.message,
+          });
+      } else {
+        res.status(500)
+          .send({
+            error: err.message,
+            stack: err.stack,
+          });
+      }
+    });
 });
 
 module.exports = router;
