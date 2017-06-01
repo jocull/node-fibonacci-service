@@ -1,7 +1,7 @@
 {
   "name": "node-fibonacci-service",
   "version": "1.0.0",
-  "description": "A web service that generates arbitrarily large fibonacci numbers",
+  "description": "A REST API that generates arbitrarily large fibonacci numbers.",
   "private": true,
   "scripts": {
     "start": "node --max_old_space_size=6144 ./bin/www"
@@ -9,18 +9,12 @@
   "dependencies": {
     "big-integer": "^1.6.23",
     "bluebird": "^3.5.0",
-    "body-parser": "^1.13.3",
-    "cookie-parser": "^1.3.3",
     "express": "^4.13.3",
-    "express-handlebars": "^3.0.0",
-    "morgan": "^1.6.1",
-    "serve-favicon": "^2.3.0",
     "worker-farm": "^1.3.1"
   },
   "devDependencies": {
     "@types/big-integer": "0.0.30",
-    "@types/bluebird": "^3.5.4",
-    "request": "^2.60.0"
+    "@types/bluebird": "^3.5.4"
   },
   "engines": {
     "node": ">=4.0.0"

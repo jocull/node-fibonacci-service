@@ -11,9 +11,7 @@ const workers = Promise.promisify(workerFarm({
                     maxConcurrentWorkers: 1,
                     maxRetries: 1,
                   },
-                  require.resolve('../fib')));
-
-class ValidationError extends Error {}
+                  require.resolve('../workers/fib')));
 
 router.get('/', function (req, res) {
   res.status(200)
@@ -22,11 +20,11 @@ router.get('/', function (req, res) {
     });
 });
 
-router.get('/fib/:fib', function (req, res) {
+router.get('/fib/:fib', function (req, res, next) {
   return Promise.resolve()
     .then(() => {
       return Promise.try(() => {
-          // bigInt throws strings on parsing failure
+          // bigInt throws strings on parsing failure, not errors
           let nBigInt = bigInt(req.params.fib);
           if (nBigInt.lt(bigInt.zero)) {
             throw 'Input must be >= 0';
@@ -35,7 +33,9 @@ router.get('/fib/:fib', function (req, res) {
         })
         .catch(errString => {
           // Rethrow for higher handler
-          throw new ValidationError(errString);
+          let e = new Error(errString);
+          e.status = 400;
+          throw e;
         });
     })
     .then(nStr => workers(nStr))
@@ -46,19 +46,7 @@ router.get('/fib/:fib', function (req, res) {
         });
     })
     .catch(err => {
-      console.error('err2', err, typeof err);
-      if (err instanceof ValidationError) {
-        res.status(400)
-          .send({
-            error: err.message,
-          });
-      } else {
-        res.status(500)
-          .send({
-            error: err.message,
-            stack: err.stack,
-          });
-      }
+      next(err);
     });
 });
 
