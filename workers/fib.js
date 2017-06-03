@@ -23,6 +23,22 @@ module.exports = function (inputNumStr, callback) {
 //     n -= 1
 //   return a
 
+function fibonacciFn(nBigInt) {
+  let a = bigInt.zero;
+  let b = bigInt.one;
+  let n = nBigInt;
+
+  while (n.gt(bigInt.zero)) {
+    let newA = b;
+    let newB = a.add(b);
+    a = newA;
+    b = newB;
+    n = n.subtract(bigInt.one);
+  }
+
+  return a;
+}
+
 const fibonacciGenerator = (function* () {
   let a = bigInt.zero;
   let b = bigInt.one;
