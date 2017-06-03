@@ -32,10 +32,11 @@ Requires Node v4+.
 ### Query Form
 
 ```
-GET http[s]://{your_host}/fib/:integer
+One:  GET http[s]://{your_host}/fib/:integer
+Many: GET http[s]://{your_host}/fib/:integer/:integer/:integer/...
 ```
 
-### Example request + response
+### Example request + response (one)
 
 ```
 GET http[s]://{your_host}/fib/500
@@ -46,5 +47,26 @@ Content-Type:  application/json; charset=utf-8
 Content-Length:  118
 ...
 
-{"result":"139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125"}
+{
+  "result": "139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125"
+}
+```
+
+### Example request + response (many)
+
+```
+GET http[s]://{your_host}/fib/5/100/500
+
+ -- response --
+200 OK
+Content-Type:  application/json; charset=utf-8
+Content-Length:  164
+
+{
+  "result": {
+    "5": "5",
+    "100": "354224848179261915075",
+    "500": "139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125"
+  }
+}
 ```
