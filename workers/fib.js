@@ -1,7 +1,7 @@
 'use strict'
 
 const bigInt = require('big-integer');
-const _ = require('lodash');
+const cache = {};
 
 module.exports = function (inputNumStr, callback) {
   let resultStr = fibonacciGetFromGenerator(inputNumStr);
@@ -45,15 +45,17 @@ const fibonacciGenerator = (function* () {
   }
 })();
 
-// Use lodash's memoize to cache the string result of the input string.
-// Using strings at the caching level cuts the objects in memory and let's us serve more numbers!
-const fibonacciGetFromGenerator = _.memoize(function (inputIntString) {
-  const nBigInt = bigInt(inputIntString);
+function fibonacciGetFromGenerator (inputIntString) {
+  let result = cache[inputIntString];
+  if (result != null) {
+    return result.toString();
+  }
 
-  let result = null;
+  const nBigInt = bigInt(inputIntString);
   do {
     result = fibonacciGenerator.next().value;
+    cache[result.n.toString()] = result.fn;
   } while (result.n.lt(nBigInt));
 
   return result.fn.toString();
-});
+}
