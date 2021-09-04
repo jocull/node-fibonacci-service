@@ -1,12 +1,10 @@
 'use strict'
 
 const bigInt = require('big-integer');
-const fibCache = new Map();
+const _ = require('lodash');
 
 module.exports = function (inputNumStr, callback) {
-  let inputBigInt = bigInt(inputNumStr.toString());
-  let resultBigInt = fibonacciGetFromGenerator(inputBigInt);
-  let resultStr = resultBigInt.toString();
+  let resultStr = fibonacciGetFromGenerator(inputNumStr);
   callback(null, resultStr);
 };
 
@@ -22,22 +20,6 @@ module.exports = function (inputNumStr, callback) {
 //     a, b = b, a+b
 //     n -= 1
 //   return a
-
-function fibonacciFn(nBigInt) {
-  let a = bigInt.zero;
-  let b = bigInt.one;
-  let n = nBigInt;
-
-  while (n.gt(bigInt.zero)) {
-    let newA = b;
-    let newB = a.add(b);
-    a = newA;
-    b = newB;
-    n = n.subtract(bigInt.one);
-  }
-
-  return a;
-}
 
 const fibonacciGenerator = (function* () {
   let a = bigInt.zero;
@@ -63,16 +45,15 @@ const fibonacciGenerator = (function* () {
   }
 })();
 
-function fibonacciGetFromGenerator(nBigInt) {
-  let result = fibCache.get(nBigInt.toString());
-  if (result) {
-    return result.fn;
-  }
+// Use lodash's memoize to cache the string result of the input string.
+// Using strings at the caching level cuts the objects in memory and let's us serve more numbers!
+const fibonacciGetFromGenerator = _.memoize(function (inputIntString) {
+  const nBigInt = bigInt(inputIntString);
 
+  let result = null;
   do {
     result = fibonacciGenerator.next().value;
-    fibCache.set(result.n.toString(), result);
   } while (result.n.lt(nBigInt));
 
-  return result.fn;
-}
+  return result.fn.toString();
+});
