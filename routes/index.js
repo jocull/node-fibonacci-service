@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const bigInt = require('big-integer');
-const { getFibonacci } = require('../workers/fib');
+const { getFibonacci } = require('../lib/fib');
 
 const LIMIT = bigInt('200000');
 
