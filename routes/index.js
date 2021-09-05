@@ -5,7 +5,7 @@ const router = express.Router();
 
 const { getFibonacci } = require('../lib/fib');
 
-const LIMIT = 200000n;
+const LIMIT = 350000n;
 
 router.get('/', function (req, res) {
   res.status(200)
