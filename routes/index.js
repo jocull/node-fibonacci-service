@@ -3,10 +3,9 @@
 const express = require('express');
 const router = express.Router();
 
-const bigInt = require('big-integer');
 const { getFibonacci } = require('../lib/fib');
 
-const LIMIT = bigInt('200000');
+const LIMIT = 200000n;
 
 router.get('/', function (req, res) {
   res.status(200)
@@ -23,10 +22,10 @@ function getFib(nStr) {
       }
 
       // bigInt throws strings on parsing failure, not errors
-      let nBigInt = bigInt(nStr);
-      if (nBigInt.lt(bigInt.zero)) {
+      let nBigInt = BigInt(nStr);
+      if (nBigInt < 0n) {
         throw 'Input must be >= 0';
-      } else if (nBigInt.gt(LIMIT)) {
+      } else if (nBigInt > LIMIT) {
         throw `Sorry! Can't generate higher than ${LIMIT.toString()} unless you raise the limit (see code)`;
       }
       return nBigInt.toString();
