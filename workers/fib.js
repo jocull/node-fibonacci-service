@@ -1,12 +1,6 @@
 'use strict'
 
 const bigInt = require('big-integer');
-const cache = {};
-
-module.exports = function (inputNumStr, callback) {
-  let resultStr = fibonacciGetFromGenerator(inputNumStr);
-  callback(null, resultStr);
-};
 
 // Example (in Python):
 // https://stackoverflow.com/a/22111492/97964
@@ -45,17 +39,47 @@ const fibonacciGenerator = (function* () {
   }
 })();
 
-function fibonacciGetFromGenerator (inputIntString) {
+
+// We use setTimeout of 0 instead of process.nextTick
+// because of how Node.js orders them in the event loop.
+// This makes the process less greedy and will allow requests
+// to complete out of cache.
+//
+// See: https://nodejs.dev/learn/understanding-process-nexttick
+// Calling setTimeout(() => {}, 0) will execute the function at the end of next tick,
+// much later than when using nextTick() which prioritizes the call and executes
+// it just before the beginning of the next tick.
+function beCooperative() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
+const cache = {};
+let maxCachedN = null;
+
+async function getFibonacci(inputIntString) {
   let result = cache[inputIntString];
   if (result != null) {
     return result.toString();
   }
 
+  let coopIterations = 0;
   const nBigInt = bigInt(inputIntString);
-  do {
+  while (maxCachedN == null || maxCachedN.lt(nBigInt)) {
+    coopIterations++;
+    if (coopIterations % 1000 == 0) {
+      await beCooperative();
+      coopIterations = 0;
+    }
     result = fibonacciGenerator.next().value;
     cache[result.n.toString()] = result.fn;
-  } while (result.n.lt(nBigInt));
+    maxCachedN = result.n;
+  }
 
-  return result.fn.toString();
+  return cache[inputIntString].toString();
 }
+
+module.exports = {
+  getFibonacci,
+};

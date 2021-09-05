@@ -3,15 +3,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Promise = require('bluebird');
 const bigInt = require('big-integer');
-const workerFarm = require('worker-farm');
-const workers = Promise.promisify(workerFarm({
-                    autoStart: true,
-                    maxConcurrentWorkers: 1,
-                    maxRetries: 1,
-                  },
-                  require.resolve('../workers/fib')));
+const { getFibonacci } = require('../workers/fib');
 
 const LIMIT = bigInt('200000');
 
@@ -23,7 +16,8 @@ router.get('/', function (req, res) {
 });
 
 function getFib(nStr) {
-  return Promise.try(() => {
+  return Promise.resolve()
+    .then(() => {
       if (typeof nStr !== 'string') {
         throw new 'Input must be of string type';
       }
@@ -37,7 +31,7 @@ function getFib(nStr) {
       }
       return nBigInt.toString();
     })
-    .then(workers)
+    .then(inputIntString => getFibonacci(inputIntString))
     .catch(errString => {
       // Rethrow for higher handler
       let e = new Error(errString);
