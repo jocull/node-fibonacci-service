@@ -16,7 +16,13 @@ Work is designed to be as cooperative as possible so that cache can respond even
 
 Results are returned as strings and not JS numbers so they can be larger than the maximum JS integer. See the native primitive [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) for details.
 
-One observation (as of Node v12.16.1) is that calculations with BigInt are very fast, but as the numbers grow the time and CPU required to perform `.toString()` on them becomes very large. Numbers can be retrieved from cache almost instantly, but the runtime will spend many seconds converting the results into strings that can be returned to the caller via JSON. Keep in mind that by the 2 millionth Fibonacci number, the resulting number string is over 400KB of data. Also keep in mind that while tied up in `.toString()` the execution thread is dominated and cannot be shared with any other processing. All cooperative efforts are lost.
+## Observations
+
+These observations were made with Node v12.16.1
+
+Calculations with the native primitive `BigInt` are very fast, but as the numbers grow the time and CPU required to perform `.toString()` on them becomes very large. Numbers can be retrieved from cache almost instantly, but the runtime will spend many seconds converting the results into strings that can be returned to the caller via JSON.
+
+Keep in mind that by the 2 millionth Fibonacci number, the resulting number string is over 400KB of data. Also keep in mind that while tied up in `.toString()` the execution thread is dominated and cannot be shared with any other processing. All cooperative efforts are lost.
 
 ## Installation + startup
 
