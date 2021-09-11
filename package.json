@@ -4,7 +4,7 @@
   "description": "A REST API that generates arbitrarily large fibonacci numbers.",
   "private": true,
   "scripts": {
-    "start": "node --max_old_space_size=6144 ./bin/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "express": "^4.17.1"

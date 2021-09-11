@@ -10,12 +10,13 @@ Why do math when you can make HTTP requests?
 
 ## Implementation details
 
-Calculation results are cached on the server for speed and results are arbitrarily large, at least until you run out of server memory or hit the hard limit. Work is designed to be as cooperative as possible so that cache can respond even when the CPU is generally tied up doing work. It kinda works. Kinda.
+Calculation results are cached on the server for speed and results are arbitrarily large, at least until you run out of server memory. Results are sparsely cached to save memory, using "checkpoints" to save a bulk of effort before working forward from the checkpoint. This saves a lot of memory vs earlier versions that cached every result, but is slower in the higher ranges of numbers when calculation effort per number becomes very high.
 
-- See `const LIMIT` under `routes/index.js`) for the hard limit.
-- See `package.json` and alter `--max_old_space_size=[____MB]` to raise (or lower) the memory limit for Node to fit your server.
+Work is designed to be as cooperative as possible so that cache can respond even when the CPU is generally tied up doing work. It kinda works. Kinda.
 
-Results are returned as strings and not JS numbers so they can be larger than the maximum JS integer. See [BigInteger.js](https://github.com/peterolson/BigInteger.js) for implementation details.
+Results are returned as strings and not JS numbers so they can be larger than the maximum JS integer. See the native primitive [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) for details.
+
+One observation (as of Node v12.16.1) is that calculations with BigInt are very fast, but as the numbers grow the time and CPU required to perform `.toString()` on them becomes very large. Numbers can be retrieved from cache almost instantly, but the runtime will spend many seconds converting the results into strings that can be returned to the caller via JSON. Keep in mind that by the 2 millionth Fibonacci number, the resulting number string is over 400KB of data. Also keep in mind that while tied up in `.toString()` the execution thread is dominated and cannot be shared with any other processing. All cooperative efforts are lost.
 
 ## Installation + startup
 
