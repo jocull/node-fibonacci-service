@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start-big": "node --max-old-space-size=32000 ./bin/www",
-    "repl-big": "node --max-old-space-size=32000"
+    "start-big": "node --max-old-space-size=16000 ./bin/www",
+    "repl-big": "node --max-old-space-size=16000",
+    "one-off": "node --max-old-space-size=2000 run.js"
   },
   "dependencies": {
     "express": "^4.17.1",
