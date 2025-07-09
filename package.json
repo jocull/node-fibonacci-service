@@ -11,13 +11,9 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@types/big-integer": "0.0.30",
-    "@types/sqlite3": "^3.1.11"
+    "mysql2": "^3.14.1"
   },
   "engines": {
-    "node": ">=10.4.0"
+    "node": ">=18"
   }
 }
