@@ -75,7 +75,7 @@ async function migrateCache() {
       }
     });
 
-    await processWithLimit(tasks, 4);
+    await processWithLimit(tasks, 1);
 
     console.log("Migration completed successfully.");
   } catch (err) {
