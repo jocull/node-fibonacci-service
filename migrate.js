@@ -30,7 +30,13 @@ async function processWithLimit(tasks, limit) {
 
 async function migrateCache() {
   try {
-    const files = await fs.readdir(cacheDir);
+    // Start with the largest files first and work backwards numerically
+    const files = (await fs.readdir(cacheDir))
+      .filter(file => !file.endsWith('.swp'))
+      .map(file => parseInt(file))
+      .sort()
+      .reverse()
+      .map(file => file.toString());
     let fileCounter = 0;
     const tasks = files.map(file => async () => {
       if (file.endsWith('.swp')) return;
