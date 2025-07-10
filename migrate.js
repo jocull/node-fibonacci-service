@@ -34,8 +34,7 @@ async function migrateCache() {
     const files = (await fs.readdir(cacheDir))
       .filter(file => !file.endsWith('.swp'))
       .map(file => parseInt(file))
-      .sort()
-      .reverse()
+      .sort((a, b) => b - a)
       .map(file => file.toString());
     let fileCounter = 0;
     const tasks = files.map(file => async () => {
