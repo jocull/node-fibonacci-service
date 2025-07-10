@@ -39,9 +39,8 @@ async function migrateCache() {
       .map(file => file.toString());
     let fileCounter = 0;
     const tasks = files.map(file => async () => {
-      if (file.endsWith('.swp')) return;
-
       try {
+        fileCounter++;
         const filePath = path.join(cacheDir, file);
         const content = await fs.readFile(filePath, 'utf-8');
         const lines = content.trim().split('\n');
@@ -51,7 +50,7 @@ async function migrateCache() {
         }
 
         const [n, a, b, fn] = lines;
-        const nInt = parseInt(n, 10);
+        const nInt = parseInt(n);
 
         if (isNaN(nInt)) {
           console.warn(`Skipping invalid file ${file} (invalid n value: ${n})`);
@@ -63,10 +62,10 @@ async function migrateCache() {
           const countRows = await conn.query(`SELECT count(*) as c FROM fib_cache WHERE n = ?`, [nInt]);
           const count = countRows[0][0].c;
           if (count > 0) {
-            console.log('Exists: n=', nInt, ++fileCounter, files.length, new Date());
+            console.log('Exists: n=', nInt, fileCounter, files.length, new Date());
           } else {
             await conn.query(insertQuery, [nInt, a, b, fn]);
-            console.log(`Added n=${nInt} from file ${file}`, ++fileCounter, files.length, new Date());
+            console.log(`Added n=${nInt} from file ${file}`, fileCounter, files.length, new Date());
           }
         } finally {
           conn.release();
