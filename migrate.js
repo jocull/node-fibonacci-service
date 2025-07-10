@@ -14,60 +14,63 @@ const pool = mysql.createPool({
 });
 
 const insertQuery = `
-  INSERT INTO fib_cache (n, a, b, fn)
+  INSERT IGNORE INTO fib_cache (n, a, b, fn)
   VALUES (?, ?, ?, ?)
-  ON DUPLICATE KEY UPDATE
-    a = VALUES(a),
-    b = VALUES(b),
-    fn = VALUES(fn)
-`;
+`.trim();
+
+// Function to process files in batches
+async function processWithLimit(tasks, limit) {
+  let index = 0;
+  while (index < tasks.length) {
+    const batch = tasks.slice(index, index + limit);
+    await Promise.all(batch.map(task => task()));
+    index += limit;
+  }
+}
 
 async function migrateCache() {
   try {
     const files = await fs.readdir(cacheDir);
-
-    for (const file of files) {
-      if (file.endsWith('.swp')) continue; // Skip swap files
-
-      const filePath = path.join(cacheDir, file);
-      const content = await fs.readFile(filePath, 'utf-8');
-      const lines = content.trim().split('\n');
-
-      if (lines.length !== 4) {
-        console.warn(`Skipping invalid file ${file} (expected 4 lines, got ${lines.length})`);
-        continue;
-      }
-
-      const [n, a, b, fn] = lines;
-      const nInt = parseInt(n, 10);
-
-      if (isNaN(nInt)) {
-        console.warn(`Skipping invalid file ${file} (invalid n value: ${n})`);
-        continue;
-      }
+    let fileCounter = 0;
+    const tasks = files.map(file => async () => {
+      if (file.endsWith('.swp')) return;
 
       try {
-        const conn = await pool.promise().getConnection();
-        await conn.beginTransaction();
+        const filePath = path.join(cacheDir, file);
+        const content = await fs.readFile(filePath, 'utf-8');
+        const lines = content.trim().split('\n');
 
+        if (lines.length !== 4) {
+          throw new Error(`Invalid file ${file} (expected 4 lines, got ${lines.length})`)
+        }
+
+        const [n, a, b, fn] = lines;
+        const nInt = parseInt(n, 10);
+
+        if (isNaN(nInt)) {
+          console.warn(`Skipping invalid file ${file} (invalid n value: ${n})`);
+          return;
+        }
+
+        const conn = await pool.promise().getConnection();
         try {
           await conn.query(insertQuery, [nInt, a, b, fn]);
-          await conn.commit();
-          console.log(`Upserted n=${nInt} from file ${file}`);
-        } catch (err) {
-          await conn.rollback();
-          console.error(`Error upserting n=${nInt} from file ${file}:`, err);
+          console.log(`Added n=${nInt} from file ${file}`, ++fileCounter, files.length, new Date());
         } finally {
           conn.release();
         }
       } catch (err) {
         console.error(`Error processing file ${file}:`, err);
+        throw err;
       }
-    }
+    });
+
+    await processWithLimit(tasks, 4);
 
     console.log("Migration completed successfully.");
   } catch (err) {
     console.error("Error during migration:", err);
+    throw err;
   } finally {
     pool.end();
   }
