@@ -54,8 +54,14 @@ async function migrateCache() {
 
         const conn = await pool.promise().getConnection();
         try {
-          await conn.query(insertQuery, [nInt, a, b, fn]);
-          console.log(`Added n=${nInt} from file ${file}`, ++fileCounter, files.length, new Date());
+          const countRows = await conn.query(`SELECT count(*) as c FROM fib_cache WHERE n = ?`, [nInt]);
+          const count = countRows[0][0].c;
+          if (count > 0) {
+            console.log('Exists: n=', nInt, ++fileCounter, files.length, new Date());
+          } else {
+            await conn.query(insertQuery, [nInt, a, b, fn]);
+            console.log(`Added n=${nInt} from file ${file}`, ++fileCounter, files.length, new Date());
+          }
         } finally {
           conn.release();
         }
