@@ -10,10 +10,14 @@
     "one-off": "node --max-old-space-size=2000 run.js"
   },
   "dependencies": {
+    "config": "^4.0.0",
     "express": "^4.17.1",
     "mysql2": "^3.14.1"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/config": "^3.3.5"
   }
 }

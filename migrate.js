@@ -1,16 +1,20 @@
 const fs = require('fs').promises;
 const path = require('path');
+
+const config = require('config');
 const mysql = require('mysql2');
 
-const cacheDir = path.join(__dirname, '.cache'); // Adjust path as needed
+const cacheDir = path.resolve(config.app.cacheDir || './.cache');
+console.log('Using cache dir:', cacheDir);
+
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'appuser',
-  password: 'Simplify4-Goon-Cheek',
-  database: 'maindb',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  host: config.mysql.host || 'localhost',
+  user: config.mysql.user || 'appuser',
+  password: config.mysql.password || 'Simplify4-Goon-Cheek',
+  database: config.mysql.database || 'maindb',
+  waitForConnections: config.mysql.waitForConnections || true,
+  connectionLimit: config.mysql.connectionLimit || 10,
+  queueLimit: config.mysql.queueLimit || 0,
 });
 
 const existQuery = `

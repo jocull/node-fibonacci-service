@@ -1,0 +1,14 @@
+{
+    "app": {
+        "cacheDir": "./.cache"
+    },
+    "mysql": {
+        "host": "localhost",
+        "user": "appuser",
+        "password": "Turf-Tackle-Mongoose5",
+        "database": "maindb",
+        "waitForConnections": true,
+        "connectionLimit": 10,
+        "queueLimit": 0
+    }
+}
