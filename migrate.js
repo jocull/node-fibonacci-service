@@ -101,7 +101,7 @@ async function migrateCache() {
       }
     });
 
-    await processWithLimit(tasks, 1);
+    await processWithLimit(tasks, config.migrate.concurrent || 1);
 
     console.log("Migration completed successfully.");
   } catch (err) {
