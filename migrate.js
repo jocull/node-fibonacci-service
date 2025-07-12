@@ -4,17 +4,17 @@ const path = require('path');
 const config = require('config');
 const mysql = require('mysql2');
 
-const cacheDir = path.resolve(config.app.cacheDir || './.cache');
+const cacheDir = path.resolve(config?.app?.cacheDir || './.cache');
 console.log('Using cache dir:', cacheDir);
 
 const pool = mysql.createPool({
-  host: config.mysql.host || 'localhost',
-  user: config.mysql.user || 'appuser',
-  password: config.mysql.password || 'Simplify4-Goon-Cheek',
-  database: config.mysql.database || 'maindb',
-  waitForConnections: config.mysql.waitForConnections || true,
-  connectionLimit: config.mysql.connectionLimit || 10,
-  queueLimit: config.mysql.queueLimit || 0,
+  host: config?.mysql?.host || 'localhost',
+  user: config?.mysql?.user || 'appuser',
+  password: config?.mysql?.password || 'Simplify4-Goon-Cheek',
+  database: config?.mysql?.database || 'maindb',
+  waitForConnections: config?.mysql?.waitForConnections || true,
+  connectionLimit: config?.mysql?.connectionLimit || 10,
+  queueLimit: config?.mysql?.queueLimit || 0,
 });
 
 const existQuery = `
@@ -101,7 +101,7 @@ async function migrateCache() {
       }
     });
 
-    await processWithLimit(tasks, config.migrate.concurrent || 1);
+    await processWithLimit(tasks, config?.migrate?.concurrent || 1);
 
     console.log("Migration completed successfully.");
   } catch (err) {
