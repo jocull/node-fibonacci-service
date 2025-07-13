@@ -5,7 +5,8 @@ const config = require('config');
 const mysql = require('mysql2');
 
 const cacheDir = path.resolve(config?.app?.cacheDir || './.cache');
-console.log('Using cache dir:', cacheDir);
+const tableName = config?.app?.cacheTable || 'fib_cache';
+console.log('Using cache dir:', cacheDir, 'Table name:', tableName);
 
 const pool = mysql.createPool({
   host: config?.mysql?.host || 'localhost',
@@ -19,12 +20,12 @@ const pool = mysql.createPool({
 
 const existQuery = `
   SELECT count(*) as c
-  FROM fib_cache
+  FROM ${tableName}
   WHERE n = ?
 `.trim();
 
 const insertQuery = `
-  INSERT IGNORE INTO fib_cache (n, a, b, fn)
+  INSERT IGNORE INTO ${tableName} (n, a, b, fn)
   VALUES (?, ?, ?, ?)
 `.trim();
 
