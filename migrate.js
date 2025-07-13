@@ -9,9 +9,9 @@ console.log('Using cache dir:', cacheDir);
 
 const pool = mysql.createPool({
   host: config?.mysql?.host || 'localhost',
-  user: config?.mysql?.user || 'appuser',
-  password: config?.mysql?.password || 'Simplify4-Goon-Cheek',
-  database: config?.mysql?.database || 'maindb',
+  user: config?.mysql?.user,
+  password: config?.mysql?.password,
+  database: config?.mysql?.database,
   waitForConnections: config?.mysql?.waitForConnections || true,
   connectionLimit: config?.mysql?.connectionLimit || 10,
   queueLimit: config?.mysql?.queueLimit || 0,
