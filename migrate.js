@@ -25,8 +25,8 @@ const existQuery = `
 `.trim();
 
 const insertQuery = `
-  INSERT IGNORE INTO ${tableName} (n, a, b, fn)
-  VALUES (?, ?, ?, ?)
+  INSERT IGNORE INTO ${tableName} (n, a, b, fn, format)
+  VALUES (?, ?, ?, ?, ?)
 `.trim();
 
 // Function to process files in batches
@@ -77,11 +77,11 @@ async function migrateCache() {
             .trim()
             .split('\n');
 
-          if (lines.length !== 4) {
-            throw new Error(`Invalid file ${file} (expected 4 lines, got ${lines.length})`);
+          if (lines.length < 4) {
+            throw new Error(`Invalid file ${file} (expected >= 4 lines, got ${lines.length})`);
           }
 
-          const [n, a, b, fn] = lines;
+          const [n, a, b, fn, format] = lines;
           const nInt = parseInt(n);
           if (isNaN(nInt)) {
             console.warn(`Skipping invalid file ${file} (invalid n value: ${n})`);
@@ -90,7 +90,8 @@ async function migrateCache() {
 
           const conn = await pool.promise().getConnection();
           try {
-            await conn.query(insertQuery, [nInt, a, b, fn]);
+            // Support legacy 'decimal' format vs 'base64'
+            await conn.query(insertQuery, [nInt, a, b, fn, (format || 'decimal')]);
             console.log(`Added n=${nInt} from file ${file}`, thisFileCount, files.length, new Date());
           } finally {
             conn.release();

@@ -7,7 +7,8 @@
     "start": "node ./bin/www",
     "start-big": "node --max-old-space-size=16000 ./bin/www",
     "repl-big": "node --max-old-space-size=16000",
-    "one-off": "node --max-old-space-size=2000 run.js"
+    "one-off": "node --max-old-space-size=2000 run.js",
+    "clean-cache": "echo \"Cache purge: Hope you're sure!\" && sleep 10 && find .cache -type f -mmin +120 -delete"
   },
   "dependencies": {
     "config": "^4.0.0",
