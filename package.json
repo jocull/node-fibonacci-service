@@ -11,6 +11,7 @@
     "clean-cache": "echo \"Cache purge: Hope you're sure!\" && sleep 10 && find .cache -type f -mmin +120 -delete"
   },
   "dependencies": {
+    "@mongodb-js/zstd": "^2.0.1",
     "config": "^4.0.0",
     "express": "^4.17.1",
     "mysql2": "^3.14.1"
