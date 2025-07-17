@@ -19,13 +19,13 @@ const pool = mysql.createPool({
 });
 
 const existQuery = `
-  SELECT count(*) as c
+  SELECT n, format
   FROM ${tableName}
   WHERE n = ?
 `.trim();
 
 const insertQuery = `
-  INSERT IGNORE INTO ${tableName} (n, a, b, fn, format)
+  REPLACE INTO ${tableName} (n, a, b, fn, format)
   VALUES (?, ?, ?, ?, ?)
 `.trim();
 
@@ -59,10 +59,11 @@ async function migrateCache() {
           }
           const conn = await pool.promise().getConnection();
           try {
-            const countRows = await conn.query(existQuery, [nInt]);
-            const count = countRows[0][0].c;
-            if (count > 0) {
-              console.log('Exists: n=', nInt, thisFileCount, files.length, new Date());
+            const [ [ existRow ] ] = await conn.query(existQuery, [nInt]);
+            const exists = existRow?.n != null;
+            const format = existRow?.format;
+            if (exists && format == 'base64') {
+              console.log('Exists: n=', nInt, format, thisFileCount, files.length, new Date());
               return;
             }
           } finally {
@@ -92,7 +93,7 @@ async function migrateCache() {
           try {
             // Support legacy 'decimal' format vs 'base64'
             await conn.query(insertQuery, [nInt, a, b, fn, (format || 'decimal')]);
-            console.log(`Added n=${nInt} from file ${file}`, thisFileCount, files.length, new Date());
+            console.log(`Added n=${nInt} from file ${file} w/ ${format}`, thisFileCount, files.length, new Date());
           } finally {
             conn.release();
           }
