@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start-big": "node --max-old-space-size=16000 ./bin/www",
-    "repl-big": "node --max-old-space-size=16000",
-    "one-off": "node --max-old-space-size=2000 run.js",
+    "start-big": "node ---max-semi-space-size=2048 --max-old-space-size=4096 ./bin/www",
+    "repl-big": "node --max-semi-space-size=2048 --max-old-space-size=4096",
+    "one-off": "node --max-semi-space-size=2048 --max-old-space-size=4096 run.js",
     "clean-cache": "echo \"Cache purge: Hope you're sure!\" && sleep 10 && find .cache -type f -mmin +120 -delete"
   },
   "dependencies": {
