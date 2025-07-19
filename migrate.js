@@ -41,6 +41,42 @@ async function processWithLimit(tasks, limit) {
 
 async function migrateCache() {
   try {
+    // Before we begin, let's do a gap check
+    {
+      const conn = await pool.promise().getConnection();
+      try {
+        console.log('Starting gap check...');
+        const [rows] = await conn.query(`SELECT n FROM ${tableName} ORDER BY n`);
+        const nList = rows.map(r => r.n);
+        const gaps = [];
+        const interval = 10_000;
+        if (nList.length > 0) {
+          console.log(nList.length, 'rows to check');
+          const nMin = nList[0], nMax = nList[nList.length - 1];
+          let nCheck = nMin;
+          for (let n of nList) {
+            if (n != nCheck) {
+              const gapSize = (n - nCheck) / interval;
+              console.warn('Found gap at', n, 'with size', gapSize, '(', nCheck, 'vs', n, ')');
+              gaps.push([nCheck, n]);
+              nCheck = n; // Realign to check next gap
+            }
+            nCheck += interval; // Next expected
+          }
+        }
+        console.log('Gap check complete.');
+        if (gaps.length > 0) {
+          console.warn('Found gaps:', gaps);
+        } else {
+          console.log('No gaps detected.');
+        }
+        console.log('Going after delay...');
+        await new Promise(resolve => setTimeout(resolve, 5_000));
+      } finally {
+        conn.release();
+      }
+    }
+
     // Start with the largest files first and work backwards numerically
     const files = (await fs.readdir(cacheDir))
       .filter(file => !file.endsWith('.swp'))
@@ -59,7 +95,7 @@ async function migrateCache() {
           }
           const conn = await pool.promise().getConnection();
           try {
-            const [ [ existRow ] ] = await conn.query(existQuery, [nInt]);
+            const [[existRow]] = await conn.query(existQuery, [nInt]);
             const exists = existRow?.n != null;
             const format = existRow?.format;
             if (exists && format == 'base64') {
