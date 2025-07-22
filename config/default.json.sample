@@ -1,6 +1,5 @@
 {
     "app": {
-        "cacheDir": "./.cache",
         "cacheTable": "fib_cache"
     },
     "migrate": {
