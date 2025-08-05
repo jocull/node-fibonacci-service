@@ -34,6 +34,21 @@ Requires Node v10.4+.
 > npm start
 ```
 
+This version uses MariaDB and some other stuff I don't feel like documenting, but the code is basic... hope you can figure it out, future self!
+
+Anyways, you may need this table create statement when you setup the DB. The table name and some things are configurable with `config`. There's a sample included.
+
+```sql
+CREATE TABLE `fib_cache` (
+  `n` bigint(20) NOT NULL,
+  `a` longtext NOT NULL,
+  `b` longtext NOT NULL,
+  `fn` longtext NOT NULL,
+  `format` varchar(10) NOT NULL,
+  PRIMARY KEY (`n`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+```
+
 ## Usage
 
 ### Query Form
