@@ -41,31 +41,42 @@ function timed(title, fnTimed) {
 }
 
 (function () {
-    const TARGET_WARMUP = 1_000_000;
-    const f1 = timed('Warm-up fibonacciBigInt', () => {
-        return fibonacciBigInt(TARGET_WARMUP);
-    });
+    // const TARGET_WARMUP = 1_000_000;
+    // const f1 = timed('Warm-up fibonacciBigInt', () => {
+    //     return fibonacciBigInt(TARGET_WARMUP);
+    // });
 
-    const f2 = timed('Warm-up fibonacciIterativeFastDoubling', () => {
-        return fibonacciIterativeFastDoubling(TARGET_WARMUP);
-    });
+    // const f2 = timed('Warm-up fibonacciIterativeFastDoubling', () => {
+    //     return fibonacciIterativeFastDoubling(TARGET_WARMUP);
+    // });
 
-    if (f1 !== f2) {
-        console.error('Mismatch!', f1, f2);
-        throw new Error('Mismatch!');
-    }
+    // if (f1 !== f2) {
+    //     console.error('Mismatch!', f1, f2);
+    //     throw new Error('Mismatch!');
+    // }
 
-    const TARGET_BENCH = 5_000_000;
-    const f3 = timed('Benchmark fibonacciBigInt', () => {
-        return fibonacciBigInt(TARGET_BENCH);
-    });
+    const TARGET_BENCH = 100_000_000;
+    // const f3 = timed('Benchmark fibonacciBigInt', () => {
+    //     return fibonacciBigInt(TARGET_BENCH);
+    // });
 
+    // @type {bigint}
     const f4 = timed('Benchmark fibonacciIterativeFastDoubling', () => {
         return fibonacciIterativeFastDoubling(TARGET_BENCH);
     });
 
-    if (f3 !== f4) {
-        console.error('Mismatch!', f1, f2);
-        throw new Error('Mismatch!');
-    }
+    // if (f3 !== f4) {
+    //     console.error('Mismatch!', f1, f2);
+    //     throw new Error('Mismatch!');
+    // }
+
+    let f4s;
+    timed('Stringify fn', () => {
+        f4s = f4.toString(16);
+        return f4.length;
+    });
+
+    timed('Parse fn', () => {
+        return BigInt(`0x${f4s}`);
+    });
 })();
