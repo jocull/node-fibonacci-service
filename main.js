@@ -6,8 +6,9 @@ worker.on('message', msg => {
     if (msg === 'bye') {
         worker.postMessage('bye');
         // worker.unref();
-        // setTimeout(() => console.log('ding'), 5000);
+        setTimeout(() => console.log('ding'), 5000);
     }
 });
 worker.postMessage('hey');
 worker.postMessage(105n);
+worker.postMessage('bye');
