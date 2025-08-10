@@ -17,6 +17,10 @@ worker.on('exit', (code) => console.warn('Worker exited with code', code));
     });
     worker.postMessage({
         op: 'fib',
+        n: 100_000_000,
+    });
+    worker.postMessage({
+        op: 'fib',
         n: 100_000,
     });
     worker.postMessage({
@@ -25,6 +29,10 @@ worker.on('exit', (code) => console.warn('Worker exited with code', code));
     });
     worker.postMessage({
         op: 'fib',
-        n: 100_000_000,
+        n: 200_000_000,
+    });
+    worker.postMessage({
+        op: 'fib',
+        n: 1000,
     });
 })();
