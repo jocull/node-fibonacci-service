@@ -24,15 +24,17 @@ const workers = new Array(os.cpus().length).fill(0)
         return worker;
     });
 
-let workerIdx = 0;
-function worker() {
-    const w = workers[workerIdx];
-    workerIdx++;
-    if (workerIdx > workers.length - 1) {
-        workerIdx = 0;
-    }
-    return w;
-}
+const worker = (() => {
+    let workerIdx = 0;
+    return () => {
+        const w = workers[workerIdx];
+        workerIdx++;
+        if (workerIdx > workers.length - 1) {
+            workerIdx = 0;
+        }
+        return w;
+    };
+})();
 
 (async function main() {
     let msgId = 0;
