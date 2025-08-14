@@ -22,7 +22,7 @@ const fp = require('./lib/fib-pool');
     const promises = workload.map(async (thisN, idx) => {
         try {
             console.log('Main: Waiting...', idx);
-            const result = await fp.getFib(thisN);
+            const result = await fp.getFibonacci(thisN);
             console.log('Main: Result:', idx, typeof result);
         } catch (err) {
             return console.error('Main: Error:', idx, typeof err, err instanceof Error, err);
