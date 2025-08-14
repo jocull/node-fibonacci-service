@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getFibonacci } = require('../lib/fib');
+const fp = require('../lib/fib-pool');
 
 router.get('/', function (req, res) {
   res.status(200)
@@ -12,9 +12,9 @@ router.get('/', function (req, res) {
     });
 });
 
-async function getFib(nStr) {
+async function getFibonacci(nStr) {
   try {
-    return await getFibonacci(nStr);
+    return await fp.getFibonacci(nStr);
   } catch (err) {
     // Rethrow for higher handler
     err.status = 400;
@@ -24,10 +24,10 @@ async function getFib(nStr) {
 
 router.get('/fib/:fib', async function (req, res, next) {
   try {
-    const result = await getFib(req.params.fib)
+    const result = await getFibonacci(req.params.fib)
     res.status(200)
       .send({
-        result: result,
+        result: result.toString(),
       });
   } catch (err) {
     next(err);
@@ -39,7 +39,7 @@ router.get('/fib/*', async function (req, res, next) {
     const nFibs = req.params['0'].split('/');
     const results = [];
     for (let nStr of nFibs) {
-      const result = await getFib(nStr);
+      const result = await getFibonacci(nStr);
       results.push({
         n: nStr,
         fn: result,
