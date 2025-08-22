@@ -14,7 +14,11 @@ router.get('/', function (req, res) {
 
 async function getFibonacci(nStr) {
   try {
-    return await fp.getFibonacci(nStr);
+    // Convert the result to a base10 string within the worker thread.
+    // String conversion can take a long time, even exceeding the time
+    // to actually calculate the number, so this avoids us tying
+    // up the main thread with stringification.
+    return await fp.getFibonacci(nStr, 'base10');
   } catch (err) {
     // Rethrow for higher handler
     err.status = 400;
@@ -27,7 +31,7 @@ router.get('/fib/:fib', async function (req, res, next) {
     const result = await getFibonacci(req.params.fib)
     res.status(200)
       .send({
-        result: result.toString(),
+        result: result,
       });
   } catch (err) {
     next(err);
