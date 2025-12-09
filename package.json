@@ -1,6 +1,6 @@
 {
   "name": "node-fibonacci-service",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A REST API that generates arbitrarily large fibonacci numbers.",
   "private": true,
   "scripts": {
@@ -9,10 +9,7 @@
   "dependencies": {
     "express": "^4.17.1"
   },
-  "devDependencies": {
-    "@types/big-integer": "0.0.30"
-  },
   "engines": {
-    "node": ">=10.4.0"
+    "node": ">=12"
   }
 }
